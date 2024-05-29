@@ -14,3 +14,6 @@ class Vacancy:
     url: str
     employer_name: str
     salary: Salary
+
+    def __lt__(self, other):
+        return self.salary < other.salary
