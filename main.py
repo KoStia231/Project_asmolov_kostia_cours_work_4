@@ -1,8 +1,9 @@
+from src.api_client.base import VacancyApiClient
 from src.api_client.hh import HeadHunterAPI
 
 
 def main():
-    client = HeadHunterAPI()
+    client: VacancyApiClient = HeadHunterAPI()
     vacancy = client.get_vacancies('python')
     for vacancy in vacancy:
         print(vacancy)
