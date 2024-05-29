@@ -8,12 +8,17 @@ class Salary:
     salary_from: int | None = None
 
     def __lt__(self, other):
-        if None not in (self.salary_from, other.salary_from):
-            if self.salary_from == other.salary_from:
-                return self.salary_to < other.salary_to
-            return self.salary_from < other.salary_from
+        self_salary_to = self.salary_to or 0
+        self_salary_from = self.salary_from or 0
+        other_salary_to = other.salary_to or 0
+        other_salary_from = other.salary_from or 0
 
-        if self.salary_from is None and other.salary_from is None:
+        if 0 not in (self_salary_from, other_salary_from):
+            if self_salary_from == other_salary_from:
+                return self_salary_to < other_salary_to
+            return self_salary_from < other_salary_from
+
+        if self_salary_from == 0 and other_salary_from == 0:
             return True
 
         if None in (self.salary_from, other.salary_from):

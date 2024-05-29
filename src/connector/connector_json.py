@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from src.connector.base import BaseConnector
-from src.dto import Vacancy
+from src.dto import Vacancy, Salary
 
 
 class ConnectorJson(BaseConnector):
@@ -15,8 +15,10 @@ class ConnectorJson(BaseConnector):
             return []
 
         vacancies = []
-        # with self.file_path.open(encoding=self.encoding) as file:
-        #     for i in json.load(file)
+        with self.file_path.open(encoding=self.encoding) as file:
+            for i in json.load(file):
+                vacancy = self._parse_dict_to_vacancy(i)
+                vacancies.append(vacancy)
 
         return vacancies
 
@@ -24,10 +26,13 @@ class ConnectorJson(BaseConnector):
         vacancies = self.get_vacancies()
         if vacancy not in vacancies:
             vacancies.append(vacancy)
-        self._save(*vacancies)
+            self._save(*vacancies)
 
     def del_vacancy(self, vacancy: Vacancy) -> None:
-        raise NotImplementedError
+        vacancies = self.get_vacancies()
+        if vacancy in vacancies:
+            vacancies.remove(vacancy)
+            self._save(*vacancies)
 
     def _save(self, *vacancies: Vacancy) -> None:
         data = [self._parse_vacancy_to_dict(v) for v in vacancies]
@@ -47,3 +52,17 @@ class ConnectorJson(BaseConnector):
             }
 
         }
+
+    @staticmethod
+    def _parse_dict_to_vacancy(data: dict) -> Vacancy:
+        return Vacancy(
+            name=data['name'],
+            url=data['url'],
+            employer_name=data['employer_name'],
+            salary=Salary(
+                salary_from=data['salary']['from'],
+                salary_to=data['salary']['to'],
+                currency=data['salary']['currency']
+
+            )
+        )
